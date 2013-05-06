@@ -3,7 +3,7 @@ class StatusesController < ApplicationController
   # GET /statuses
   # GET /statuses.json
   def index
-    @statuses = Status.all
+    @statuses = Status.order('id DESC')
 
     respond_to do |format|
       format.html # index.html.erb
