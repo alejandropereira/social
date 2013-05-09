@@ -35,14 +35,17 @@ class StatusesController < ApplicationController
 
   # GET /statuses/1/edit
   def edit
-    @status = Status.find(params[:id])
+    unless current_user.statuses.find_by_id(params[:id])
+      redirect_to statuses_path, alert: 'Cannot edit anothers users statuses'
+    else
+      @status = current_user.statuses.find(params[:id])
+    end
   end
 
   # POST /statuses
   # POST /statuses.json
   def create
-    @status = Status.new(params[:status])
-
+    @status = current_user.statuses.new(params[:status])
     respond_to do |format|
       if @status.save
         format.html { redirect_to @status, notice: 'Status was successfully created.' }
@@ -57,8 +60,8 @@ class StatusesController < ApplicationController
   # PUT /statuses/1
   # PUT /statuses/1.json
   def update
-    @status = Status.find(params[:id])
-
+    @status = current_user.statuses.find_by_id(params[:id])
+    params[:status].delete(:user_id) if params[:status].has_key?(:user_id)
     respond_to do |format|
       if @status.update_attributes(params[:status])
         format.html { redirect_to @status, notice: 'Status was successfully updated.' }
